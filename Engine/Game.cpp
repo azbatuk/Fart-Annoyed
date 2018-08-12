@@ -25,7 +25,19 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd )
-{
+{ 
+	const Color colors[4] = { Colors::Red, Colors::Green, Colors::Yellow, Colors::Magenta };
+	const Vec2 startPos(0.0f, 0.0f);
+	int i = 0;
+	for (int y = 0; y < nBricksVertical; y++)
+	{
+		const Color c = colors[y];
+		for (int x = 0; x < nBricksHorizontal; x++)
+		{
+			bricks[i] = Brick(RectF(startPos + Vec2(x * brickWidth, y * brickHeight), brickWidth, brickHeight), c);
+			i++;
+		}
+	}
 }
 
 void Game::Go()
@@ -42,4 +54,6 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+	for (int i = 0; i < nBricks; i++)
+	bricks[i].Draw(gfx);
 }
