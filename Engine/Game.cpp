@@ -21,11 +21,11 @@
 #include "MainWindow.h"
 #include "Game.h"
 
-Game::Game( MainWindow& wnd )
+Game::Game(MainWindow& wnd)
 	:
-	wnd( wnd ),
-	gfx( wnd )
-{ 
+	wnd(wnd),
+	gfx(wnd)
+{
 	const Color colors[4] = { Colors::Red, Colors::Green, Colors::Yellow, Colors::Magenta };
 	const Vec2 startPos(0.0f, 0.0f);
 	int i = 0;
@@ -54,6 +54,6 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
-	for (int i = 0; i < nBricks; i++)
-	bricks[i].Draw(gfx);
+	//for (int i = 0; i < nBricks; i++)
+	//bricks[i].Draw(gfx);
 }
