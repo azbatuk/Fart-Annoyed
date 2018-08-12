@@ -24,10 +24,11 @@
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
-	gfx(wnd)
+	gfx(wnd),
+	ball(Vec2(200.0f, 200.0f), Vec2(1.0f, 1.0f))
 {
 	const Color colors[4] = { Colors::Red, Colors::Green, Colors::Yellow, Colors::Magenta };
-	const Vec2 startPos(0.0f, 0.0f);
+	const Vec2 startPos(100.0f, 50.0f);
 	int i = 0;
 	for (int y = 0; y < nBricksVertical; y++)
 	{
@@ -38,6 +39,8 @@ Game::Game(MainWindow& wnd)
 			i++;
 		}
 	}
+
+	ballRadius = float(ball.GetDiameter() / 2);
 }
 
 void Game::Go()
@@ -50,10 +53,27 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	const float dt = ft.Mark();
+
+	ball.Update(int(ballSpeed) * dt);
+
+	for (int i = 0; i < nBricks; i++)
+	{
+		if (bricks[i].BallCollision(ball))
+		{
+			ball.ReboundY();
+			break;
+		}
+	}
+
 }
 
 void Game::ComposeFrame()
 {
-	//for (int i = 0; i < nBricks; i++)
-	//bricks[i].Draw(gfx);
+	for (int i = 0; i < nBricks; i++)
+	{
+		bricks[i].Draw(gfx);
+	}
+
+	SpriteCodex::DrawBall(ball.GetPos() + Vec2(ballRadius, ballRadius), gfx);
 }

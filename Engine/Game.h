@@ -24,6 +24,9 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "Brick.h"
+#include "Ball.h"
+#include "SpriteCodex.h"
+#include "FrameTimer.h"
 
 class Game
 {
@@ -45,12 +48,13 @@ private:
 	/*  User Variables              */
 	static constexpr float brickWidth = 40.0f;
 	static constexpr float brickHeight = 24.0f;
-	static constexpr int nBricksHorizontal = 5;
-	static constexpr int nBricksVertical = 1;
+	static constexpr int nBricksHorizontal = 15;
+	static constexpr int nBricksVertical = 4;
 	static constexpr int nBricks = nBricksHorizontal * nBricksVertical;
-	
 	Brick bricks[nBricks];
-
-	//Brick brick;
+	Ball ball;
+	static constexpr float ballSpeed = 200.0f;
+	float ballRadius;
+	FrameTimer ft;
 	/********************************/
 };
