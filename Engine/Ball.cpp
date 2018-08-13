@@ -8,19 +8,19 @@ Ball::Ball(Vec2 & pos_in, Vec2 & vel_in)
 {
 }
 
-void Ball::Update(float speed, const RectF& walls)
+void Ball::Update(float speed, const RectF& gameArea)
 {
 	pos += vel * speed;
 
-	if (pos.x < walls.left)
+	if (pos.x < gameArea.left)
 	{
 		vel.x = -vel.x;
-		pos.x = walls.left;
+		pos.x = gameArea.left;
 	}
-	else if (pos.x >= walls.right - diameter)
+	else if (pos.x >= gameArea.right - diameter)
 	{
 		vel.x = -vel.x;
-		pos.x = float(walls.right - diameter);
+		pos.x = float(gameArea.right - diameter);
 	}
 	else if (pos.y < 0)
 	{
@@ -56,7 +56,5 @@ void Ball::ReboundX()
 
 void Ball::ReboundY()
 {
-	if (vel.y < 0) {
-		vel.y = -vel.y;
-	}
+	vel.y = -vel.y;
 }

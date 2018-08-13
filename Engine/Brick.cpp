@@ -22,7 +22,7 @@ bool Brick::BallCollision(const Ball& ball)
 	const int ballRight = int(ball.GetPos().x + ball.GetDiameter());
 	const int ballBottom = int(ball.GetPos().y + ball.GetDiameter());
 
-	if (!isDestroyed &&
+	if (!isDestroyed && 
 		ballLeft	< rect.right &&
 		ballRight	> rect.left &&
 		ballTop		< rect.bottom &&

@@ -27,7 +27,7 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd),
 	ball(Vec2(400.0f, 400.0f), Vec2(1.0f, 1.0f)),
-	paddle(Vec2(450.0f, 300.0f), 75.0f, 25.0f)
+	paddle(Vec2(350.0f, 520.0f))
 {
 	int i = 0;
 	for (int y = 0; y < nBricksVertical; y++)
@@ -55,24 +55,33 @@ void Game::UpdateModel()
 {
 	const float dt = ft.Mark();
 
-	ball.Update(int(ballSpeed) * dt, walls);
+	ball.Update(int(ballSpeed) * dt, gameArea);
 
-	paddle.Update(wnd.kbd, dt, walls);
+	paddle.Update(wnd.kbd, dt, gameArea);
 	
 	for (int i = 0; i < nBricks; i++)
 	{
 		if (bricks[i].BallCollision(ball))
 		{
-			ball.ReboundY();
+			if (ball.GetVel().y < 0) {
+				ball.ReboundY();
+			}
 			break;
+		}
+	}
+
+	if (paddle.BallCollision(ball))
+	{
+		if (ball.GetVel().y > 0) {
+			ball.ReboundY();
 		}
 	}
 }
 
 void Game::ComposeFrame()
 {
-	gfx.DrawRect(0, 0, int(walls.left), int(walls.bottom), Colors::Gray);
-	gfx.DrawRect(int(walls.right), 0, gfx.ScreenWidth, int(walls.bottom), Colors::Gray);
+	gfx.DrawRect(0, 0, int(gameArea.left), int(gameArea.bottom), Colors::Gray);
+	gfx.DrawRect(int(gameArea.right), 0, gfx.ScreenWidth, int(gameArea.bottom), Colors::Gray);
 
 	for (int i = 0; i < nBricks; i++)
 	{
@@ -80,4 +89,6 @@ void Game::ComposeFrame()
 	}
 
 	SpriteCodex::DrawBall(ball.GetPos() + Vec2(ballRadius, ballRadius), gfx);
+
+	paddle.Draw(gfx);
 }

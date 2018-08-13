@@ -52,13 +52,13 @@ private:
 	static constexpr int nBricksHorizontal = 15;
 	static constexpr int nBricksVertical = 4;
 	static constexpr int nBricks = nBricksHorizontal * nBricksVertical;
-	const Vec2 gameAreaTopLeft = { 100.0f, 50.0f };
 	Brick bricks[nBricks];
 	const Color brickColors[4] = { Colors::Red, Colors::Green, Colors::Yellow, Colors::Magenta };
 	Ball ball;
 	static constexpr float ballSpeed = 200.0f;
 	float ballRadius;
-	RectF walls = { gameAreaTopLeft.x, 0.0f, gameAreaTopLeft.x + nBricksHorizontal * brickWidth, gfx.ScreenHeight };
+	const Vec2 gameAreaTopLeft = { 100.0f, 50.0f };
+	RectF gameArea = { gameAreaTopLeft.x, 0.0f, gameAreaTopLeft.x + nBricksHorizontal * brickWidth, gfx.ScreenHeight };
 	Paddle paddle;
 	FrameTimer ft;
 	/********************************/
