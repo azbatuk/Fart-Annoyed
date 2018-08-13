@@ -27,7 +27,10 @@ Game::Game(MainWindow& wnd)
 	wnd(wnd),
 	gfx(wnd),
 	ball(Vec2(400.0f, 400.0f), Vec2(1.0f, 1.0f)),
-	paddle(Vec2(350.0f, 520.0f))
+	paddle(Vec2(350.0f, 520.0f)),
+	soundPaddle(L"Sounds\\arkpad.wav"),
+	soundBrick(L"Sounds\\arkbrick.wav"),
+	soundWall(L"Sounds\\coin.wav")
 {
 	int i = 0;
 	for (int y = 0; y < nBricksVertical; y++)
@@ -55,7 +58,11 @@ void Game::UpdateModel()
 {
 	const float dt = ft.Mark();
 
-	ball.Update(int(ballSpeed) * dt, gameArea);
+	ball.Update(int(ballSpeed) * dt);
+	if (ball.WallCollision(gameArea))
+	{
+		soundWall.Play();
+	}
 
 	paddle.Update(wnd.kbd, dt, gameArea);
 	
@@ -65,6 +72,7 @@ void Game::UpdateModel()
 		{
 			if (ball.GetVel().y < 0) {
 				ball.ReboundY();
+				soundBrick.Play();
 			}
 			break;
 		}
@@ -74,6 +82,7 @@ void Game::UpdateModel()
 	{
 		if (ball.GetVel().y > 0) {
 			ball.ReboundY();
+			soundPaddle.Play();
 		}
 	}
 }

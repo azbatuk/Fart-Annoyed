@@ -28,6 +28,7 @@
 #include "SpriteCodex.h"
 #include "FrameTimer.h"
 #include "Paddle.h"
+#include "Sound.h"
 
 class Game
 {
@@ -61,5 +62,8 @@ private:
 	RectF gameArea = { gameAreaTopLeft.x, 0.0f, gameAreaTopLeft.x + nBricksHorizontal * brickWidth, gfx.ScreenHeight };
 	Paddle paddle;
 	FrameTimer ft;
+	Sound soundPaddle;
+	Sound soundBrick;
+	Sound soundWall;
 	/********************************/
 };
