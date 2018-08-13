@@ -8,19 +8,19 @@ Ball::Ball(Vec2 & pos_in, Vec2 & vel_in)
 {
 }
 
-void Ball::Update(float speed)
+void Ball::Update(float speed, const RectF& walls)
 {
 	pos += vel * speed;
 
-	if (pos.x < 0)
+	if (pos.x < walls.left)
 	{
 		vel.x = -vel.x;
-		pos.x = 0;
+		pos.x = walls.left;
 	}
-	else if (pos.x >= Graphics::ScreenWidth - diameter)
+	else if (pos.x >= walls.right - diameter)
 	{
 		vel.x = -vel.x;
-		pos.x = float(Graphics::ScreenWidth - diameter);
+		pos.x = float(walls.right - diameter);
 	}
 	else if (pos.y < 0)
 	{
@@ -47,6 +47,11 @@ Vec2 Ball::GetVel() const
 int Ball::GetDiameter() const
 {
 	return diameter;
+}
+
+void Ball::ReboundX()
+{
+	vel.x = -vel.x;
 }
 
 void Ball::ReboundY()

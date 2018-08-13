@@ -20,22 +20,22 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "Keyboard.h"
 
 Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	ball(Vec2(200.0f, 200.0f), Vec2(1.0f, 1.0f))
+	ball(Vec2(400.0f, 400.0f), Vec2(1.0f, 1.0f)),
+	paddle(Vec2(450.0f, 300.0f), 75.0f, 25.0f)
 {
-	const Color colors[4] = { Colors::Red, Colors::Green, Colors::Yellow, Colors::Magenta };
-	const Vec2 startPos(100.0f, 50.0f);
 	int i = 0;
 	for (int y = 0; y < nBricksVertical; y++)
 	{
-		const Color c = colors[y];
+		const Color c = brickColors[y];
 		for (int x = 0; x < nBricksHorizontal; x++)
 		{
-			bricks[i] = Brick(RectF(startPos + Vec2(x * brickWidth, y * brickHeight), brickWidth, brickHeight), c);
+			bricks[i] = Brick(RectF(gameAreaTopLeft + Vec2(x * brickWidth, y * brickHeight), brickWidth, brickHeight), c);
 			i++;
 		}
 	}
@@ -55,8 +55,10 @@ void Game::UpdateModel()
 {
 	const float dt = ft.Mark();
 
-	ball.Update(int(ballSpeed) * dt);
+	ball.Update(int(ballSpeed) * dt, walls);
 
+	paddle.Update(wnd.kbd, dt, walls);
+	
 	for (int i = 0; i < nBricks; i++)
 	{
 		if (bricks[i].BallCollision(ball))
@@ -65,11 +67,13 @@ void Game::UpdateModel()
 			break;
 		}
 	}
-
 }
 
 void Game::ComposeFrame()
 {
+	gfx.DrawRect(0, 0, int(walls.left), int(walls.bottom), Colors::Gray);
+	gfx.DrawRect(int(walls.right), 0, gfx.ScreenWidth, int(walls.bottom), Colors::Gray);
+
 	for (int i = 0; i < nBricks; i++)
 	{
 		bricks[i].Draw(gfx);
