@@ -61,29 +61,28 @@ void Game::UpdateModel()
 	ball.Update(int(ballSpeed) * dt);
 	if (ball.WallCollision(gameArea))
 	{
-		soundWall.Play();
+		//soundWall.Play();
 	}
 
-	paddle.Update(wnd.kbd, dt, gameArea);
-	
-	for (int i = 0; i < nBricks; i++)
+	paddle.Update(wnd.kbd, dt);
+	paddle.WallCollision(gameArea);
+
+	for (Brick& b : bricks)
 	{
-		if (bricks[i].BallCollision(ball))
+		if (b.BallCollision(ball))
 		{
-			if (ball.GetVel().y < 0) {
-				ball.ReboundY();
-				soundBrick.Play();
-			}
+			soundBrick.Play();
 			break;
 		}
 	}
 
 	if (paddle.BallCollision(ball))
 	{
-		if (ball.GetVel().y > 0) {
-			ball.ReboundY();
-			soundPaddle.Play();
-		}
+		//if (ball.GetVel().y > 0) {
+		//	ball.ReboundY();
+		//	soundPaddle.Play();
+		//}
+		soundPaddle.Play();
 	}
 }
 
@@ -92,9 +91,9 @@ void Game::ComposeFrame()
 	gfx.DrawRect(0, 0, int(gameArea.left), int(gameArea.bottom), Colors::Gray);
 	gfx.DrawRect(int(gameArea.right), 0, gfx.ScreenWidth, int(gameArea.bottom), Colors::Gray);
 
-	for (int i = 0; i < nBricks; i++)
+	for (const Brick& b : bricks)
 	{
-		bricks[i].Draw(gfx);
+		b.Draw(gfx);
 	}
 
 	SpriteCodex::DrawBall(ball.GetPos() + Vec2(ballRadius, ballRadius), gfx);

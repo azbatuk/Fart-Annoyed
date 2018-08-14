@@ -50,7 +50,7 @@ private:
 	/*  User Variables              */
 	static constexpr float brickWidth = 40.0f;
 	static constexpr float brickHeight = 24.0f;
-	static constexpr int nBricksHorizontal = 15;
+	static constexpr int nBricksHorizontal = 12;
 	static constexpr int nBricksVertical = 4;
 	static constexpr int nBricks = nBricksHorizontal * nBricksVertical;
 	Brick bricks[nBricks];
@@ -58,7 +58,9 @@ private:
 	Ball ball;
 	static constexpr float ballSpeed = 200.0f;
 	float ballRadius;
-	const Vec2 gameAreaTopLeft = { 100.0f, 50.0f };
+	const float gameAreaTopLeftX = (gfx.ScreenWidth - (nBricksHorizontal * brickWidth)) / 2;
+	const float gameAreaTopLeftY = 50.0f;
+	const Vec2 gameAreaTopLeft = { gameAreaTopLeftX, gameAreaTopLeftY };
 	RectF gameArea = { gameAreaTopLeft.x, 0.0f, gameAreaTopLeft.x + nBricksHorizontal * brickWidth, gfx.ScreenHeight };
 	Paddle paddle;
 	FrameTimer ft;

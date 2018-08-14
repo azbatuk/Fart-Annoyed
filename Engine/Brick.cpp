@@ -11,11 +11,11 @@ void Brick::Draw(Graphics & gfx) const
 {
 	if (!isDestroyed)
 	{
-		gfx.DrawRect(rect, c);
+		gfx.DrawRect(rect.GetExpanded(-padding), c);
 	}
 }
 
-bool Brick::BallCollision(const Ball& ball)
+bool Brick::BallCollision(Ball& ball)
 {
 	const int ballLeft = int(ball.GetPos().x);
 	const int ballTop = int(ball.GetPos().y);
@@ -29,6 +29,9 @@ bool Brick::BallCollision(const Ball& ball)
 		ballBottom	> rect.top)
 	{
 		isDestroyed = true;
+		if (ball.GetVel().y < 0) {
+			ball.ReboundY();
+		}
 		return true;
 	}
 	return false;
