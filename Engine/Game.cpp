@@ -67,21 +67,54 @@ void Game::UpdateModel()
 	paddle.Update(wnd.kbd, dt);
 	paddle.WallCollision(gameArea);
 
-	for (Brick& b : bricks)
+	bool firstCollision = false;
+	int firstCollisionIndex = 0;
+	for (int i = 0; i < nBricks; i++)
 	{
-		if (b.BallCollision(ball))
+		if (bricks[i].BallCollision(ball))
 		{
-			soundBrick.Play();
-			break;
+			if (!firstCollision)
+			{
+				firstCollisionIndex = i;
+				firstCollision = true;
+			}
+			else
+			{
+				// There is a second collision, meaning ball hit two bricks which are side by side simultaneously.
+				// Find which brick's center is closer to the ball's center and destroy that one.
+
+				//Vec2 ballCenter		= ball.GetCenter();
+				//Vec2 brick1Center		= bricks[firstCollisionIndex].GetCenter();
+				//Vec2 brick2Center		= bricks[i].GetCenter();
+				//Vec2 ball2Brick1		= ballCenter - brick1Center;
+				//Vec2 ball2Brick2		= ballCenter - brick2Center;
+				//float distance1		= ball2Brick1.GetLengthSq();
+				//float distance2		= ball2Brick2.GetLengthSq();
+
+				float firstDistance = (ball.GetCenter() - bricks[firstCollisionIndex].GetCenter()).GetLengthSq();
+				float secondDistance = (ball.GetCenter() - bricks[i].GetCenter()).GetLengthSq();
+
+				// Undestroy the brick that ir farther from the ball's center
+				if (firstDistance < secondDistance)
+				{
+					// First brick is closer, undestroy the second
+					bricks[i].SetDestroyed(false);
+				}
+				else
+				{
+					// Secong brick is closer, undestroy the first
+					bricks[firstCollisionIndex].SetDestroyed(false);
+				}
+			}
 		}
+	}
+	if (firstCollision)
+	{
+		soundBrick.Play();
 	}
 
 	if (paddle.BallCollision(ball))
 	{
-		//if (ball.GetVel().y > 0) {
-		//	ball.ReboundY();
-		//	soundPaddle.Play();
-		//}
 		soundPaddle.Play();
 	}
 }

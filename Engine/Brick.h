@@ -13,6 +13,8 @@ public:
 	Brick(const RectF& rect_in, Color c_in);
 	void Draw(Graphics& gfx) const;
 	bool BallCollision(Ball& ball);
+	Vec2 GetCenter() const;
+	void SetDestroyed(const bool isDestroyed_in);
 private:
 	RectF rect;
 	Color c;

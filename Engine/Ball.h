@@ -12,7 +12,7 @@ public:
 	Vec2 GetPos() const;
 	Vec2 GetVel() const;
 	int GetDiameter() const;
-	Vec2 GetBallCenter() const;
+	Vec2 GetCenter() const;
 	void ReboundX();
 	void ReboundY();
 private:

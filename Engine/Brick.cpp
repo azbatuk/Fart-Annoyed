@@ -29,7 +29,7 @@ bool Brick::BallCollision(Ball& ball)
 		ballBottom	> rect.top)
 	{
 		isDestroyed = true;
-		const Vec2 ballCenter = ball.GetBallCenter();
+		const Vec2 ballCenter = ball.GetCenter();
 		if (ballCenter.x > rect.left && ballCenter.x < rect.right)
 		{
 			// ball hit top or bottom of brick
@@ -43,4 +43,14 @@ bool Brick::BallCollision(Ball& ball)
 		return true;
 	}
 	return false;
+}
+
+Vec2 Brick::GetCenter() const
+{
+	return rect.GetCenter();
+}
+
+void Brick::SetDestroyed(const bool isDestroyed_in)
+{
+	isDestroyed = isDestroyed_in;
 }
