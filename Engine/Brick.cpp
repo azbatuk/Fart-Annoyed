@@ -29,8 +29,16 @@ bool Brick::BallCollision(Ball& ball)
 		ballBottom	> rect.top)
 	{
 		isDestroyed = true;
-		if (ball.GetVel().y < 0) {
+		const Vec2 ballCenter = ball.GetBallCenter();
+		if (ballCenter.x > rect.left && ballCenter.x < rect.right)
+		{
+			// ball hit top or bottom of brick
 			ball.ReboundY();
+		}
+		else
+		{
+			// ball hit left or right side of brick
+			ball.ReboundX();
 		}
 		return true;
 	}

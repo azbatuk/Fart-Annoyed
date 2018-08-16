@@ -58,6 +58,12 @@ int Ball::GetDiameter() const
 	return diameter;
 }
 
+Vec2 Ball::GetBallCenter() const
+{
+	const int radius = diameter / 2;
+	return Vec2(pos.x + radius, pos.y + radius);
+}
+
 void Ball::ReboundX()
 {
 	vel.x = -vel.x;
