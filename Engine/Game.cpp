@@ -49,18 +49,23 @@ Game::Game(MainWindow& wnd)
 void Game::Go()
 {
 	gfx.BeginFrame();	
-	UpdateModel();
+	float elapsedTime = ft.Mark();
+	while (elapsedTime > 0.0f)
+	{
+		const float dt = std::min(0.0025f, elapsedTime);
+		UpdateModel(dt);
+		elapsedTime -= dt;
+	}
 	ComposeFrame();
 	gfx.EndFrame();
 }
 
-void Game::UpdateModel()
+void Game::UpdateModel(float dt)
 {
-	const float dt = ft.Mark();
-
-	ball.Update(int(ballSpeed) * dt);
+	ball.Update(dt);
 	if (ball.WallCollision(gameArea))
 	{
+		paddle.ResetCooldown();
 		//soundWall.Play();
 	}
 
@@ -94,7 +99,7 @@ void Game::UpdateModel()
 				float firstDistance = (ball.GetCenter() - bricks[firstCollisionIndex].GetCenter()).GetLengthSq();
 				float secondDistance = (ball.GetCenter() - bricks[i].GetCenter()).GetLengthSq();
 
-				// Undestroy the brick that ir farther from the ball's center
+				// Undestroy the brick that is farther from the ball's center
 				if (firstDistance < secondDistance)
 				{
 					// First brick is closer, undestroy the second
@@ -110,6 +115,7 @@ void Game::UpdateModel()
 	}
 	if (firstCollision)
 	{
+		paddle.ResetCooldown();
 		soundBrick.Play();
 	}
 

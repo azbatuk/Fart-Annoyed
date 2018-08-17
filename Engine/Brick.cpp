@@ -30,15 +30,33 @@ bool Brick::BallCollision(Ball& ball)
 	{
 		isDestroyed = true;
 		const Vec2 ballCenter = ball.GetCenter();
-		if (ballCenter.x > rect.left && ballCenter.x < rect.right)
+		const Vec2 brickCenter = GetCenter();
+
+		// If ball's X velocity and the value from the difference between 
+		// X values of ball and brick positions are both pointing the same 
+		// velocity direction (both numbers are negative or positive) 
+		// then ball can only rebound on the Y axis due to the angle it is 
+		// approaching - hitting the brick approacing from inside, 
+		// no need to check if it is hitting the side of the brick or not.
+		if ( std::signbit( ball.GetVel().x ) == std::signbit( (ballCenter - brickCenter).x ) )
 		{
-			// ball hit top or bottom of brick
 			ball.ReboundY();
 		}
+		// Otherwise - hitting the brick approacing from outside, 
+		// check if ball is hitting top/bottom or sides of the brick
+		// and Rebound accordingly.
 		else
 		{
-			// ball hit left or right side of brick
-			ball.ReboundX();
+			if (ballCenter.x >= rect.left && ballCenter.x <= rect.right)
+			{
+				// ball hit top or bottom of brick
+				ball.ReboundY();
+			}
+			else
+			{
+				// ball hit left or right side of brick
+				ball.ReboundX();
+			}
 		}
 		return true;
 	}

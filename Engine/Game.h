@@ -39,7 +39,7 @@ public:
 	void Go();
 private:
 	void ComposeFrame();
-	void UpdateModel();
+	void UpdateModel(float dt);
 	/********************************/
 	/*  User Functions              */
 	/********************************/
@@ -56,7 +56,7 @@ private:
 	Brick bricks[nBricks];
 	const Color brickColors[4] = { Colors::Red, Colors::Green, Colors::Yellow, Colors::Magenta };
 	Ball ball;
-	static constexpr float ballSpeed = 200.0f;
+	//static constexpr float ballSpeed = 150.0f;
 	float ballRadius;
 	const float gameAreaTopLeftX = (gfx.ScreenWidth - (nBricksHorizontal * brickWidth)) / 2;
 	const float gameAreaTopLeftY = 50.0f;

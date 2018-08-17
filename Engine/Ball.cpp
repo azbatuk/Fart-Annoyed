@@ -8,9 +8,9 @@ Ball::Ball(Vec2 & pos_in, Vec2 & vel_in)
 {
 }
 
-void Ball::Update(float speed)
+void Ball::Update(float dt)
 {
-	pos += vel * speed;
+	pos += vel * ballSpeed * dt;
 }
 
 bool Ball::WallCollision(const RectF & gameArea)

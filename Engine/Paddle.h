@@ -13,8 +13,11 @@ public:
 	Paddle(Vec2& pos_in);
 	void Update(Keyboard& kbd, float dt);
 	void Draw(Graphics& gfx);
-	bool BallCollision(Ball& ball) const;
+	bool BallCollision(Ball& ball);
 	void WallCollision(const RectF& gameArea);
+	Vec2 GetCenter() const;
+	void ResetCooldown();
+	int CooldownCounter = 0;
 private:
 	Vec2 pos;
 	static constexpr float width = 90.0f;
@@ -23,4 +26,5 @@ private:
 	static constexpr Color c = Colors::LightGray;
 	static constexpr float wingWidth = 10.0f;
 	static constexpr Color wingColor = Colors::Red;
+	bool isCooldown = false;
 };

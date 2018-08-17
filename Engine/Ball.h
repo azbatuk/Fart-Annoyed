@@ -19,4 +19,5 @@ private:
 	Vec2 pos;
 	Vec2 vel;
 	static constexpr int diameter = 14;
+	static constexpr float ballSpeed = 250.0f;
 };
