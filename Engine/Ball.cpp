@@ -73,3 +73,9 @@ void Ball::ReboundY()
 {
 	vel.y = -vel.y;
 }
+
+void Ball::NewRound(Vec2& pos_in, Vec2& vel_in)
+{
+	pos = pos_in;
+	vel = vel_in;
+}

@@ -15,6 +15,7 @@ public:
 	Vec2 GetCenter() const;
 	void ReboundX();
 	void ReboundY();
+	void NewRound(Vec2& pos_in, Vec2& vel_in);
 private:
 	Vec2 pos;
 	Vec2 vel;

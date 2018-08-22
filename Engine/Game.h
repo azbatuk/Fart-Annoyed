@@ -68,6 +68,13 @@ private:
 	Sound soundPaddle;
 	Sound soundBrick;
 	Sound soundWall;
+	Sound soundNextRound;
+	int lives = 3;
+	bool waitTimerStarted = false;
+	bool startNextRound = false;
+	std::chrono::steady_clock::time_point readyWait;
+	std::chrono::duration<float> waitDuration;
+	const float waitTime = 4.7f;
 	bool isGameStarted = false;
 	bool isGameOver = false;
 	/********************************/

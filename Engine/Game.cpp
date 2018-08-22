@@ -30,7 +30,8 @@ Game::Game(MainWindow& wnd)
 	paddle(Vec2(350.0f, 520.0f)),
 	soundPaddle(L"Sounds\\arkpad.wav"),
 	soundBrick(L"Sounds\\arkbrick.wav"),
-	soundWall(L"Sounds\\coin.wav")
+	soundWall(L"Sounds\\coin.wav"),
+	soundNextRound(L"Sounds\\ready.wav")
 {
 	int i = 0;
 	for (int y = 0; y < nBricksVertical; y++)
@@ -62,82 +63,109 @@ void Game::Go()
 
 void Game::UpdateModel(float dt)
 {
-	if (ball.GetPos().y >= gfx.ScreenHeight - ball.GetDiameter())
+	if (ball.GetPos().y >= gfx.ScreenHeight - ball.GetDiameter() && startNextRound == false)
 	{
-		isGameOver = true;
-	}
-	else
-	{
-		if (isGameStarted)
+		lives -= 1;
+		if (lives == 0)
 		{
-			ball.Update(dt);
-			if (ball.WallCollision(gameArea))
-			{
-				paddle.ResetCooldown();
-				//soundWall.Play();
-			}
-
-			paddle.Update(wnd.kbd, dt);
-			paddle.WallCollision(gameArea);
-
-			bool firstCollision = false;
-			int firstCollisionIndex = 0;
-			for (int i = 0; i < nBricks; i++)
-			{
-				if (bricks[i].BallCollision(ball))
-				{
-					if (!firstCollision)
-					{
-						firstCollisionIndex = i;
-						firstCollision = true;
-					}
-					else
-					{
-						// There is a second collision, meaning ball hit two bricks which are side by side simultaneously.
-						// Find which brick's center is closer to the ball's center and destroy that one.
-
-						//Vec2 ballCenter		= ball.GetCenter();
-						//Vec2 brick1Center		= bricks[firstCollisionIndex].GetCenter();
-						//Vec2 brick2Center		= bricks[i].GetCenter();
-						//Vec2 ball2Brick1		= ballCenter - brick1Center;
-						//Vec2 ball2Brick2		= ballCenter - brick2Center;
-						//float distance1		= ball2Brick1.GetLengthSq();
-						//float distance2		= ball2Brick2.GetLengthSq();
-
-						float firstDistance = (ball.GetCenter() - bricks[firstCollisionIndex].GetCenter()).GetLengthSq();
-						float secondDistance = (ball.GetCenter() - bricks[i].GetCenter()).GetLengthSq();
-
-						// Undestroy the brick that is farther from the ball's center
-						if (firstDistance < secondDistance)
-						{
-							// First brick is closer, undestroy the second
-							bricks[i].SetDestroyed(false);
-						}
-						else
-						{
-							// Secong brick is closer, undestroy the first
-							bricks[firstCollisionIndex].SetDestroyed(false);
-						}
-					}
-				}
-			}
-			if (firstCollision)
-			{
-				paddle.ResetCooldown();
-				soundBrick.Play();
-			}
-
-			if (paddle.BallCollision(ball))
-			{
-				soundPaddle.Play();
-			}
+			isGameOver = true;
 		}
 		else
 		{
-			if (wnd.kbd.KeyIsPressed(VK_RETURN))
+			startNextRound = true;
+		}
+	}
+
+	if (isGameStarted && !isGameOver && !startNextRound)
+	{
+		ball.Update(dt);
+		if (ball.WallCollision(gameArea))
+		{
+			paddle.ResetCooldown();
+			//soundWall.Play();
+		}
+
+		paddle.Update(wnd.kbd, dt);
+		paddle.WallCollision(gameArea);
+
+		bool firstCollision = false;
+		int firstCollisionIndex = 0;
+		for (int i = 0; i < nBricks; i++)
+		{
+			if (bricks[i].BallCollision(ball))
 			{
-				isGameStarted = true;
+				if (!firstCollision)
+				{
+					firstCollisionIndex = i;
+					firstCollision = true;
+				}
+				else
+				{
+					// There is a second collision, meaning ball hit two bricks which are side by side simultaneously.
+					// Find which brick's center is closer to the ball's center and destroy that one.
+
+					//Vec2 ballCenter		= ball.GetCenter();
+					//Vec2 brick1Center		= bricks[firstCollisionIndex].GetCenter();
+					//Vec2 brick2Center		= bricks[i].GetCenter();
+					//Vec2 ball2Brick1		= ballCenter - brick1Center;
+					//Vec2 ball2Brick2		= ballCenter - brick2Center;
+					//float distance1		= ball2Brick1.GetLengthSq();
+					//float distance2		= ball2Brick2.GetLengthSq();
+
+					float firstDistance = (ball.GetCenter() - bricks[firstCollisionIndex].GetCenter()).GetLengthSq();
+					float secondDistance = (ball.GetCenter() - bricks[i].GetCenter()).GetLengthSq();
+
+					// Undestroy the brick that is farther from the ball's center
+					if (firstDistance < secondDistance)
+					{
+						// First brick is closer, undestroy the second
+						bricks[i].SetDestroyed(false);
+					}
+					else
+					{
+						// Secong brick is closer, undestroy the first
+						bricks[firstCollisionIndex].SetDestroyed(false);
+					}
+				}
 			}
+		}
+		if (firstCollision)
+		{
+			paddle.ResetCooldown();
+			soundBrick.Play();
+		}
+
+		if (paddle.BallCollision(ball))
+		{
+			soundPaddle.Play();
+		}
+	}
+	else if (startNextRound && !isGameOver)
+	{
+		if (!waitTimerStarted)
+		{
+			soundNextRound.Play();
+			readyWait = std::chrono::steady_clock::now();
+			waitDuration = std::chrono::steady_clock::now() - readyWait;
+			waitTimerStarted = true;
+		}
+		else
+		{
+			waitDuration = std::chrono::steady_clock::now() - readyWait;
+		}
+
+		if (waitDuration.count() > waitTime)
+		{
+			startNextRound = false;
+			waitTimerStarted = false;
+			ball.NewRound(Vec2(300.0f, 300.0f), Vec2(1.0f, 1.0f));
+		}
+	}
+	else
+	{
+		if (wnd.kbd.KeyIsPressed(VK_RETURN))
+		{
+			isGameStarted = true;
 		}
 	}
 }
@@ -146,11 +174,10 @@ void Game::ComposeFrame()
 {
 	if (isGameStarted)
 	{
-		//gfx.DrawRect(0, 0, int(gameArea.left), int(gameArea.bottom), Colors::Gray);
-		//gfx.DrawRect(int(gameArea.right), 0, gfx.ScreenWidth, int(gameArea.bottom), Colors::Gray);
 		gfx.DrawRect(int(gameArea.left - borderThickness), int(gameArea.top - borderThickness), int(gameArea.left), gfx.ScreenHeight, Colors::Gray);
 		gfx.DrawRect(int(gameArea.left - borderThickness), int(gameArea.top - borderThickness), int(gameArea.right + borderThickness), int(gameArea.top), Colors::Gray);
 		gfx.DrawRect(int(gameArea.right), int(gameArea.top - borderThickness), int(gameArea.right + borderThickness), gfx.ScreenHeight, Colors::Gray);
+
 		for (const Brick& b : bricks)
 		{
 			b.Draw(gfx);
@@ -162,8 +189,13 @@ void Game::ComposeFrame()
 
 		if (isGameOver)
 		{
-			SpriteCodex::DrawGameOver(Vec2(400.0f, 300.0f), gfx);
+			SpriteCodex::DrawGameOver(Vec2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
 		}
+		else if (startNextRound)
+		{
+			SpriteCodex::DrawReady(Vec2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
+		}
+
 	}
 	else
 	{
