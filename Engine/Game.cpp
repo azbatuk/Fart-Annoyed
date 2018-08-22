@@ -38,7 +38,7 @@ Game::Game(MainWindow& wnd)
 		const Color c = brickColors[y];
 		for (int x = 0; x < nBricksHorizontal; x++)
 		{
-			bricks[i] = Brick(RectF(gameAreaTopLeft + Vec2(x * brickWidth, y * brickHeight), brickWidth, brickHeight), c);
+			bricks[i] = Brick(RectF(Vec2(gameAreaTopLeft.x, gameAreaTopLeft.y + padAboveBricks) + Vec2(x * brickWidth, y * brickHeight), brickWidth, brickHeight), c);
 			i++;
 		}
 	}
@@ -146,9 +146,11 @@ void Game::ComposeFrame()
 {
 	if (isGameStarted)
 	{
-		gfx.DrawRect(0, 0, int(gameArea.left), int(gameArea.bottom), Colors::Gray);
-		gfx.DrawRect(int(gameArea.right), 0, gfx.ScreenWidth, int(gameArea.bottom), Colors::Gray);
-
+		//gfx.DrawRect(0, 0, int(gameArea.left), int(gameArea.bottom), Colors::Gray);
+		//gfx.DrawRect(int(gameArea.right), 0, gfx.ScreenWidth, int(gameArea.bottom), Colors::Gray);
+		gfx.DrawRect(int(gameArea.left - borderThickness), int(gameArea.top - borderThickness), int(gameArea.left), gfx.ScreenHeight, Colors::Gray);
+		gfx.DrawRect(int(gameArea.left - borderThickness), int(gameArea.top - borderThickness), int(gameArea.right + borderThickness), int(gameArea.top), Colors::Gray);
+		gfx.DrawRect(int(gameArea.right), int(gameArea.top - borderThickness), int(gameArea.right + borderThickness), gfx.ScreenHeight, Colors::Gray);
 		for (const Brick& b : bricks)
 		{
 			b.Draw(gfx);

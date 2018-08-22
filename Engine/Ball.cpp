@@ -27,10 +27,10 @@ bool Ball::WallCollision(const RectF & gameArea)
 		pos.x = float(gameArea.right - diameter);
 		return true;
 	}
-	else if (pos.y < 0)
+	else if (pos.y <= gameArea.top)
 	{
 		ReboundY();
-		pos.y = 0;
+		pos.y = gameArea.top;
 		return true;
 	}
 	else if (pos.y >= Graphics::ScreenHeight - diameter)
