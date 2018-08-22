@@ -68,86 +68,103 @@ void Game::UpdateModel(float dt)
 	}
 	else
 	{
-		ball.Update(dt);
-		if (ball.WallCollision(gameArea))
+		if (isGameStarted)
 		{
-			paddle.ResetCooldown();
-			//soundWall.Play();
-		}
-
-		paddle.Update(wnd.kbd, dt);
-		paddle.WallCollision(gameArea);
-
-		bool firstCollision = false;
-		int firstCollisionIndex = 0;
-		for (int i = 0; i < nBricks; i++)
-		{
-			if (bricks[i].BallCollision(ball))
+			ball.Update(dt);
+			if (ball.WallCollision(gameArea))
 			{
-				if (!firstCollision)
+				paddle.ResetCooldown();
+				//soundWall.Play();
+			}
+
+			paddle.Update(wnd.kbd, dt);
+			paddle.WallCollision(gameArea);
+
+			bool firstCollision = false;
+			int firstCollisionIndex = 0;
+			for (int i = 0; i < nBricks; i++)
+			{
+				if (bricks[i].BallCollision(ball))
 				{
-					firstCollisionIndex = i;
-					firstCollision = true;
-				}
-				else
-				{
-					// There is a second collision, meaning ball hit two bricks which are side by side simultaneously.
-					// Find which brick's center is closer to the ball's center and destroy that one.
-
-					//Vec2 ballCenter		= ball.GetCenter();
-					//Vec2 brick1Center		= bricks[firstCollisionIndex].GetCenter();
-					//Vec2 brick2Center		= bricks[i].GetCenter();
-					//Vec2 ball2Brick1		= ballCenter - brick1Center;
-					//Vec2 ball2Brick2		= ballCenter - brick2Center;
-					//float distance1		= ball2Brick1.GetLengthSq();
-					//float distance2		= ball2Brick2.GetLengthSq();
-
-					float firstDistance = (ball.GetCenter() - bricks[firstCollisionIndex].GetCenter()).GetLengthSq();
-					float secondDistance = (ball.GetCenter() - bricks[i].GetCenter()).GetLengthSq();
-
-					// Undestroy the brick that is farther from the ball's center
-					if (firstDistance < secondDistance)
+					if (!firstCollision)
 					{
-						// First brick is closer, undestroy the second
-						bricks[i].SetDestroyed(false);
+						firstCollisionIndex = i;
+						firstCollision = true;
 					}
 					else
 					{
-						// Secong brick is closer, undestroy the first
-						bricks[firstCollisionIndex].SetDestroyed(false);
+						// There is a second collision, meaning ball hit two bricks which are side by side simultaneously.
+						// Find which brick's center is closer to the ball's center and destroy that one.
+
+						//Vec2 ballCenter		= ball.GetCenter();
+						//Vec2 brick1Center		= bricks[firstCollisionIndex].GetCenter();
+						//Vec2 brick2Center		= bricks[i].GetCenter();
+						//Vec2 ball2Brick1		= ballCenter - brick1Center;
+						//Vec2 ball2Brick2		= ballCenter - brick2Center;
+						//float distance1		= ball2Brick1.GetLengthSq();
+						//float distance2		= ball2Brick2.GetLengthSq();
+
+						float firstDistance = (ball.GetCenter() - bricks[firstCollisionIndex].GetCenter()).GetLengthSq();
+						float secondDistance = (ball.GetCenter() - bricks[i].GetCenter()).GetLengthSq();
+
+						// Undestroy the brick that is farther from the ball's center
+						if (firstDistance < secondDistance)
+						{
+							// First brick is closer, undestroy the second
+							bricks[i].SetDestroyed(false);
+						}
+						else
+						{
+							// Secong brick is closer, undestroy the first
+							bricks[firstCollisionIndex].SetDestroyed(false);
+						}
 					}
 				}
 			}
-		}
-		if (firstCollision)
-		{
-			paddle.ResetCooldown();
-			soundBrick.Play();
-		}
+			if (firstCollision)
+			{
+				paddle.ResetCooldown();
+				soundBrick.Play();
+			}
 
-		if (paddle.BallCollision(ball))
+			if (paddle.BallCollision(ball))
+			{
+				soundPaddle.Play();
+			}
+		}
+		else
 		{
-			soundPaddle.Play();
+			if (wnd.kbd.KeyIsPressed(VK_RETURN))
+			{
+				isGameStarted = true;
+			}
 		}
 	}
 }
 
 void Game::ComposeFrame()
 {
-	gfx.DrawRect(0, 0, int(gameArea.left), int(gameArea.bottom), Colors::Gray);
-	gfx.DrawRect(int(gameArea.right), 0, gfx.ScreenWidth, int(gameArea.bottom), Colors::Gray);
-
-	for (const Brick& b : bricks)
+	if (isGameStarted)
 	{
-		b.Draw(gfx);
+		gfx.DrawRect(0, 0, int(gameArea.left), int(gameArea.bottom), Colors::Gray);
+		gfx.DrawRect(int(gameArea.right), 0, gfx.ScreenWidth, int(gameArea.bottom), Colors::Gray);
+
+		for (const Brick& b : bricks)
+		{
+			b.Draw(gfx);
+		}
+
+		SpriteCodex::DrawBall(ball.GetPos() + Vec2(ballRadius, ballRadius), gfx);
+
+		paddle.Draw(gfx);
+
+		if (isGameOver)
+		{
+			SpriteCodex::DrawGameOver(Vec2(400.0f, 300.0f), gfx);
+		}
 	}
-
-	SpriteCodex::DrawBall(ball.GetPos() + Vec2(ballRadius, ballRadius), gfx);
-
-	paddle.Draw(gfx);
-
-	if (isGameOver)
+	else
 	{
-		SpriteCodex::DrawGameOver(Vec2(400.0f, 300.0f), gfx);
+		SpriteCodex::DrawTitle(Vec2(400.0f, 300.0f), gfx);
 	}
 }
