@@ -67,5 +67,6 @@ private:
 	Sound soundPaddle;
 	Sound soundBrick;
 	Sound soundWall;
+	bool isGameOver = false;
 	/********************************/
 };
