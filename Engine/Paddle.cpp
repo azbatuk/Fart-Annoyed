@@ -53,18 +53,49 @@ bool Paddle::BallCollision(Ball & ball)
 				ball.ReboundY();
 			}
 			// Otherwise - hitting the paddle approacing from outside, 
-			// check if ball is hitting top/bottom or sides of the paddle
+			// check if ball is hitting top or sides of the paddle
 			// and Rebound accordingly.
 			else
 			{
 				if (ballCenter.x >= pos.x && ballCenter.x <= pos.x + width)
 				{
-					// ball hit top or bottom of brick
+					// Ball hit the top of the paddle
 					ball.ReboundY();
+
+					// This condition also means Ball hit the side of the paddle same as the side it is approaching from:
+
+					// - First : Adjust the bounce angle based on how far from the paddle's center the ball hit
+					const float ballX_to_paddleX = ballCenter.x - paddleCenter.x;
+					float ballVelX_modifier = 0.0f;
+					if (ballX_to_paddleX > 20 && ballX_to_paddleX < 35)
+					{
+						ballVelX_modifier = 0.5f;
+					}
+					else if (ballX_to_paddleX > 35)
+					{
+						ballVelX_modifier = 1.0f;
+					}
+					else if (ballX_to_paddleX < -20 && ballX_to_paddleX > -35)
+					{
+						ballVelX_modifier = -0.5f;
+					}
+					else if (ballX_to_paddleX < -35)
+					{
+						ballVelX_modifier = -1.0f;
+					}
+
+					// - Second: Ball coming from left and hitting the top-left of the paddle or coming from right and hitting top-right,
+					// then bounce it back to that side.
+					ball.ReboundX();
+
+					// calculate and set new Vel.x for Ball
+					float ballVelX_out = (ball.GetVel().x > 0) ? 1 : -1;
+					ballVelX_out += ballVelX_modifier;
+					ball.SetVel(Vec2(ballVelX_out, ball.GetVel().y));
 				}
 				else
 				{
-					// ball hit left or right side of brick
+					// Ball hit left of right vertical side of the paddle, send it to bottom to end the game.
 					ball.ReboundX();
 				}
 			}

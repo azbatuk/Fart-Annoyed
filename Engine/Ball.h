@@ -16,7 +16,12 @@ public:
 	void ReboundX();
 	void ReboundY();
 	void NewRound(Vec2& pos_in, Vec2& vel_in);
+	void SetVel(Vec2& vel_in);
 private:
+	const float posX = 300.0f;
+	const float posY = 300.0f;
+	const float velX = -1.0f;
+	const float velY = -1.0f;
 	Vec2 pos;
 	Vec2 vel;
 	static constexpr int diameter = 14;
