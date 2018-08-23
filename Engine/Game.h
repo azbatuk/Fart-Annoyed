@@ -58,7 +58,7 @@ private:
 	Ball ball;
 	float ballRadius;
 	const float gameAreaTopLeftX = (gfx.ScreenWidth - (nBricksHorizontal * brickWidth)) / 2;
-	const float gameAreaTopLeftY = 40.0f;
+	const float gameAreaTopLeftY = 10.0f;
 	const Vec2 gameAreaTopLeft = { gameAreaTopLeftX, gameAreaTopLeftY };
 	const float padAboveBricks = 60.0f;
 	RectF gameArea = { gameAreaTopLeft, Vec2(gameAreaTopLeft.x + nBricksHorizontal * brickWidth, gfx.ScreenHeight)};
@@ -71,7 +71,7 @@ private:
 	Sound soundNextRound;
 	int lives = 3;
 	bool waitTimerStarted = false;
-	bool startNextRound = false;
+	bool waitForNextRound = false;
 	std::chrono::steady_clock::time_point readyWait;
 	std::chrono::duration<float> waitDuration;
 	const float waitTime = 4.7f;

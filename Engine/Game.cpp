@@ -68,7 +68,7 @@ void Game::Go()
 
 void Game::UpdateModel(float dt)
 {
-	if (ball.GetPos().y >= gfx.ScreenHeight - ball.GetDiameter() && startNextRound == false)
+	if (ball.GetPos().y >= gfx.ScreenHeight - ball.GetDiameter() && waitForNextRound == false)
 	{
 		lives -= 1;
 		if (lives == 0)
@@ -77,11 +77,11 @@ void Game::UpdateModel(float dt)
 		}
 		else
 		{
-			startNextRound = true;
+			waitForNextRound = true;
 		}
 	}
 
-	if (isGameStarted && !isGameOver && !startNextRound)
+	if (isGameStarted && !isGameOver && !waitForNextRound)
 	{
 		ball.Update(dt);
 		if (ball.WallCollision(gameArea))
@@ -146,7 +146,7 @@ void Game::UpdateModel(float dt)
 			soundPaddle.Play();
 		}
 	}
-	else if (startNextRound && !isGameOver)
+	else if (waitForNextRound && !isGameOver)
 	{
 		if (!waitTimerStarted)
 		{
@@ -162,7 +162,7 @@ void Game::UpdateModel(float dt)
 
 		if (waitDuration.count() > waitTime)
 		{
-			startNextRound = false;
+			waitForNextRound = false;
 			waitTimerStarted = false;
 			ball.NewRound(Vec2(300.0f, 300.0f), Vec2(-1.0f, -1.0f));
 		}
@@ -197,7 +197,7 @@ void Game::ComposeFrame()
 		{
 			SpriteCodex::DrawGameOver(Vec2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
 		}
-		else if (startNextRound)
+		else if (waitForNextRound)
 		{
 			SpriteCodex::DrawReady(Vec2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
 		}
