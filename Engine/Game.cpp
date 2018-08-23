@@ -30,8 +30,9 @@ Game::Game(MainWindow& wnd)
 	paddle(Vec2(350.0f, 520.0f)),
 	soundPaddle(L"Sounds\\arkpad.wav"),
 	soundBrick(L"Sounds\\arkbrick.wav"),
-	soundWall(L"Sounds\\coin.wav"),
-	soundNextRound(L"Sounds\\ready.wav")
+	soundWall(L"Sounds\\wall.wav"),
+	soundNextRound(L"Sounds\\ready.wav"),
+	soundGameOver(L"Sounds\\game_over.wav")
 {
 	int i = 0;
 	for (int y = 0; y < nBricksVertical; y++)
@@ -68,26 +69,29 @@ void Game::Go()
 
 void Game::UpdateModel(float dt)
 {
-	if (ball.GetPos().y >= gfx.ScreenHeight - ball.GetDiameter() && waitForNextRound == false)
-	{
-		lives -= 1;
-		if (lives == 0)
-		{
-			isGameOver = true;
-		}
-		else
-		{
-			waitForNextRound = true;
-		}
-	}
-
 	if (isGameStarted && !isGameOver && !waitForNextRound)
 	{
 		ball.Update(dt);
-		if (ball.WallCollision(gameArea))
+
+		// wallHitNo: 0=none 1=hit wall 2=hit bottom
+		int wallHitNo = ball.WallCollision(gameArea);
+		if (wallHitNo == 1) // hit side or top wall
 		{
 			paddle.ResetCooldown();
-			//soundWall.Play();
+			soundWall.Play();
+		}
+		else if (wallHitNo == 2) // hit bottom
+		{
+			lives -= 1;
+			if (lives == 0)
+			{
+				isGameOver = true;
+				soundGameOver.Play();
+			}
+			else
+			{
+				waitForNextRound = true;
+			}
 		}
 
 		paddle.Update(wnd.kbd, dt);

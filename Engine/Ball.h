@@ -8,7 +8,8 @@ class Ball
 public:
 	Ball(Vec2& pos_in, Vec2& vel_in);
 	void Update(float speed);
-	bool WallCollision(const RectF& gameArea);
+	// return: 0=none 1=hit wall 2=hit bottom
+	int WallCollision(const RectF& gameArea);
 	Vec2 GetPos() const;
 	Vec2 GetVel() const;
 	int GetDiameter() const;

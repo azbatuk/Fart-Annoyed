@@ -69,6 +69,7 @@ private:
 	Sound soundBrick;
 	Sound soundWall;
 	Sound soundNextRound;
+	Sound soundGameOver;
 	int lives = 3;
 	bool waitTimerStarted = false;
 	bool waitForNextRound = false;
