@@ -50,6 +50,10 @@ Game::Game(MainWindow& wnd)
 void Game::Go()
 {
 	gfx.BeginFrame();	
+
+	// Increase the number of steps UpdateModel()
+	// is executed each pass to improve collision 
+	// detection accuracy.
 	float elapsedTime = ft.Mark();
 	while (elapsedTime > 0.0f)
 	{
@@ -57,6 +61,7 @@ void Game::Go()
 		UpdateModel(dt);
 		elapsedTime -= dt;
 	}
+
 	ComposeFrame();
 	gfx.EndFrame();
 }
@@ -88,6 +93,7 @@ void Game::UpdateModel(float dt)
 		paddle.Update(wnd.kbd, dt);
 		paddle.WallCollision(gameArea);
 
+		// Check if ball hit any brick
 		bool firstCollision = false;
 		int firstCollisionIndex = 0;
 		for (int i = 0; i < nBricks; i++)
