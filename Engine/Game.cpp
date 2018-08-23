@@ -26,7 +26,7 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	ball(Vec2(300.0f, 300.0f), Vec2(1.0f, 1.0f)),
+	ball(Vec2(300.0f, 300.0f), Vec2(-1.0f, -1.0f)),
 	paddle(Vec2(350.0f, 520.0f)),
 	soundPaddle(L"Sounds\\arkpad.wav"),
 	soundBrick(L"Sounds\\arkbrick.wav"),
@@ -164,7 +164,7 @@ void Game::UpdateModel(float dt)
 		{
 			startNextRound = false;
 			waitTimerStarted = false;
-			ball.NewRound(Vec2(300.0f, 300.0f), Vec2(1.0f, 1.0f));
+			ball.NewRound(Vec2(300.0f, 300.0f), Vec2(-1.0f, -1.0f));
 		}
 	}
 	else
@@ -202,6 +202,15 @@ void Game::ComposeFrame()
 			SpriteCodex::DrawReady(Vec2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
 		}
 
+		const int livesPadding = 2;
+		for (int i = 0; i < lives; i++)
+		{
+			gfx.DrawRect(RectF(gameArea.left + i * 50, 
+							   gfx.ScreenHeight - 20, 
+							   gameArea.left + 40 + i * 50, 
+							   gfx.ScreenHeight - 10).GetExpanded(livesPadding) ,
+						Colors::Cyan);
+		}
 	}
 	else
 	{
