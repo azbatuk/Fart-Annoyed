@@ -46,15 +46,19 @@ Game::Game(MainWindow& wnd)
 	}
 
 	ballRadius = float(ball.GetDiameter() / 2);
+
+	//ResetBall();
 }
 
 void Game::Go()
 {
 	gfx.BeginFrame();	
 
-	// Increase the number of steps UpdateModel()
-	// is executed each pass to improve collision 
-	// detection accuracy.
+	/*
+	Increase the number of steps UpdateModel()
+	is executed each pass to improve collision 
+	detection accuracy.
+	*/
 	float elapsedTime = ft.Mark();
 	while (elapsedTime > 0.0f)
 	{
@@ -73,14 +77,14 @@ void Game::UpdateModel(float dt)
 	{
 		ball.Update(dt);
 
-		// wallHitNo: 0=none 1=hit wall 2=hit bottom
-		int wallHitNo = ball.WallCollision(gameArea);
-		if (wallHitNo == 1) // hit side or top wall
+		// wallHitResult: 0=none 1=hit wall 2=hit bottom
+		const int wallHitResult = ball.WallCollision(gameArea);
+		if (wallHitResult == 1) // hit side or top wall
 		{
 			paddle.ResetCooldown();
 			soundWall.Play();
 		}
-		else if (wallHitNo == 2) // hit bottom
+		else if (wallHitResult == 2) // hit bottom
 		{
 			lives -= 1;
 			if (lives == 0)
@@ -168,7 +172,9 @@ void Game::UpdateModel(float dt)
 		{
 			waitForNextRound = false;
 			waitTimerStarted = false;
-			ball.NewRound(Vec2(300.0f, 300.0f), Vec2(-1.0f, -1.0f));
+
+			ball = Ball(Vec2(300.0f, 300.0f), Vec2(-0.55f, -1.0f));
+			//ResetBall();
 		}
 	}
 	else
@@ -178,6 +184,11 @@ void Game::UpdateModel(float dt)
 			isGameStarted = true;
 		}
 	}
+}
+
+void Game::ResetBall()
+{
+	ball = Ball(Graphics::GetScreenRect().GetCenter(), Vec2(-0.55f, -1.0f));
 }
 
 void Game::ComposeFrame()

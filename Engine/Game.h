@@ -46,6 +46,7 @@ private:
 private:
 	MainWindow& wnd;
 	Graphics gfx;
+	void ResetBall();
 	/********************************/
 	/*  User Variables              */
 	static constexpr float brickWidth = 40.0f;

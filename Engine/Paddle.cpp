@@ -42,63 +42,54 @@ bool Paddle::BallCollision(Ball & ball)
 			const Vec2 ballCenter = ball.GetCenter();
 			const Vec2 paddleCenter = GetCenter();
 
-			// If ball's X velocity and the value from the difference between 
-			// X values of ball and paddle positions are both pointing the same 
-			// velocity direction (both numbers are negative or positive) 
-			// then ball can only rebound on the Y axis due to the angle it is 
-			// approaching - hitting the paddle approacing from inside, 
-			// no need to check if it is hitting the side of the paddle or not.
-			if (std::signbit(ball.GetVel().x) == std::signbit((ballCenter - paddleCenter).x))
+			/*
+			1st condition: 
+			If ball's X velocity and the value from the difference between 
+			X values of ball and paddle positions are both pointing the same 
+			velocity direction (both numbers are negative or positive) 
+			then ball can only rebound on the Y axis due to the angle it is 
+			approaching - hitting the paddle approaching from inside.
+			OR
+			2nd condition: 
+			If ball is hitting top of the paddle after approaching from outside
+			*/
+			if (std::signbit(ball.GetVel().x) == std::signbit((ballCenter - paddleCenter).x) ||
+				(ballCenter.x >= pos.x && ballCenter.x <= pos.x + width))
 			{
-				ball.ReboundY();
-			}
-			// Otherwise - hitting the paddle approacing from outside, 
-			// check if ball is hitting top or sides of the paddle
-			// and Rebound accordingly.
-			else
-			{
-				if (ballCenter.x >= pos.x && ballCenter.x <= pos.x + width)
+				Vec2 dir;
+				const float xDifference = ballCenter.x - paddleCenter.x;
+				const float fixedXComponent = fixedZoneHalfWidth * exitXFactor;
+
+				/* if ball hit within fixedZoneHalfWidth distance
+				of paddle center, then use a fixed angle to bounce it back
+				to prevent too vertical bounce backs. */
+				if (std::abs(xDifference) < fixedZoneHalfWidth)
 				{
-					// Ball hit the top of the paddle
-					ball.ReboundY();
-
-					// This condition also means Ball hit the side of the paddle same as the side it is approaching from:
-
-					// - First : Adjust the bounce angle based on how far from the paddle's center the ball hit
-					const float ballX_to_paddleX = ballCenter.x - paddleCenter.x;
-					float ballVelX_modifier = 0.0f;
-					if (ballX_to_paddleX > 20 && ballX_to_paddleX < 35)
+					// ball hit left of paddle center
+					if (xDifference < 0.0f)
 					{
-						ballVelX_modifier = 0.5f;
+						dir = Vec2(-fixedXComponent, -1.0f);
 					}
-					else if (ballX_to_paddleX > 35)
+					// ball hit right of paddle center
+					else
 					{
-						ballVelX_modifier = 1.0f;
+						dir = Vec2(fixedXComponent, -1.0f);
 					}
-					else if (ballX_to_paddleX < -20 && ballX_to_paddleX > -35)
-					{
-						ballVelX_modifier = -0.5f;
-					}
-					else if (ballX_to_paddleX < -35)
-					{
-						ballVelX_modifier = -1.0f;
-					}
-
-					// - Second: Ball coming from left and hitting the top-left of the paddle or coming from right and hitting top-right,
-					// then bounce it back to that side.
-					ball.ReboundX();
-
-					// calculate and set new Vel.x for Ball
-					float ballVelX_out = (ball.GetVel().x > 0) ? 1 : -1;
-					ballVelX_out += ballVelX_modifier;
-					ball.SetVel(Vec2(ballVelX_out, ball.GetVel().y));
 				}
+				// ball hit outside the fixed zone around paddle center
 				else
 				{
-					// Ball hit left of right vertical side of the paddle, send it to bottom to end the game.
-					ball.ReboundX();
+					dir = Vec2(xDifference * exitXFactor, -1.0f);
 				}
+		
+				ball.SetDirection(dir);
 			}
+			else
+			{
+				// Ball hit left of right vertical side of the paddle, so send it to bottom to end the game.
+				ball.ReboundX();
+			}
+
 			isCooldown = true;
 			return true;
 		}

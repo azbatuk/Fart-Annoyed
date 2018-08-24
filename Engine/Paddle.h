@@ -23,6 +23,26 @@ private:
 	static constexpr float width = 90.0f;
 	static constexpr float height = 20.0f;
 	static constexpr float speed = 200.0f;
+
+	/*
+	exitXFactor: 
+	Used to correct ball bounce back dir.x value to prevent 
+	the ball's angle from becoming too horizontal (extreme in the x direction).
+	This is when ball direction is calculated based on where it hit on 
+	the paddle and dir.x is adjusted to bounce it back at different angles.
+	*/
+	float exitXFactor = 0.045f;
+
+	/*
+	fixedZoneHalfWidth:
+	Prevent ball from bouncing straight up and down
+	(or close to it) when it hits on the center (or 
+	close to it) of the paddle by usding a fixed dir.x
+	angle if ball hit within the fixedZoneHalfWidth value 
+	distance from the paddle center.
+	*/
+	float fixedZoneHalfWidth = 15.0f;
+
 	static constexpr Color c = Colors::LightGray;
 	static constexpr float wingWidth = 10.0f;
 	static constexpr Color wingColor = Colors::Red;

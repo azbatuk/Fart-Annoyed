@@ -1,16 +1,16 @@
 #include "Ball.h"
 #include "Graphics.h"
 
-Ball::Ball(Vec2 & pos_in, Vec2 & vel_in)
+Ball::Ball(const Vec2 & pos_in, const Vec2 & dir_in)
 	:
-	pos(pos_in),
-	vel(vel_in)
+	pos(pos_in)
 {
+	SetDirection(dir_in);
 }
 
 void Ball::Update(float dt)
 {
-	pos += vel * ballSpeed * dt;
+	pos += vel * dt;
 }
 
 int Ball::WallCollision(const RectF & gameArea)
@@ -35,9 +35,6 @@ int Ball::WallCollision(const RectF & gameArea)
 	}
 	else if (pos.y >= Graphics::ScreenHeight - diameter)
 	{
-		//ReboundY();
-		//pos.y = float(Graphics::ScreenHeight - diameter);
-
 		// No rebound! Game/Round over!
 		return 2;
 	}
@@ -76,13 +73,7 @@ void Ball::ReboundY()
 	vel.y = -vel.y;
 }
 
-void Ball::NewRound(Vec2& pos_in, Vec2& vel_in)
+void Ball::SetDirection(const Vec2 & dir_in)
 {
-	pos = pos_in;
-	vel = vel_in;
-}
-
-void Ball::SetVel(Vec2 & vel_in)
-{
-	vel = vel_in;
+	vel = dir_in.GetNormalized() * ballSpeed;
 }
