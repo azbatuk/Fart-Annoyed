@@ -64,6 +64,18 @@ public:
 		DrawRect(int(rect.left), int(rect.top), int(rect.right), int(rect.bottom), c);
 	}
 	void DrawCircle( int x,int y,int radius,Color c );
+
+	/* Right Triangles: */
+	/* ----------------------- */
+	// Right angle is at Upper Left
+	void DrawIsoRightTriUL(int x, int y, int size, Color c);
+	// Right angle is at Upper Right
+	void DrawIsoRightTriUR(int x, int y, int size, Color c);
+	// Right angle is at Bottom Left
+	void DrawIsoRightTriBL(int x, int y, int size, Color c);
+	// Right angle is at Bottom Right
+	void DrawIsoRightTriBR(int x, int y, int size, Color c);
+
 	~Graphics();
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
