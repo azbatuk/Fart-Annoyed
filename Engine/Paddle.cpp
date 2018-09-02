@@ -1,8 +1,11 @@
 #include "Paddle.h"
 
-Paddle::Paddle(Vec2& pos_in)
+Paddle::Paddle(const Vec2& pos_in)
 	:
-	pos(pos_in)
+	pos(pos_in),
+	exitXFactor(maxExitRatio / halfWidth),
+	fixedZoneHalfWidth(halfWidth * fixedZoneWidthRatio),
+	fixedZoneExitX(fixedZoneHalfWidth * exitXFactor)
 {
 }
 
@@ -58,7 +61,6 @@ bool Paddle::BallCollision(Ball & ball)
 			{
 				Vec2 dir;
 				const float xDifference = ballCenter.x - paddleCenter.x;
-				const float fixedXComponent = fixedZoneHalfWidth * exitXFactor;
 
 				/* if ball hit within fixedZoneHalfWidth distance
 				of paddle center, then use a fixed angle to bounce it back
@@ -68,12 +70,12 @@ bool Paddle::BallCollision(Ball & ball)
 					// ball hit left of paddle center
 					if (xDifference < 0.0f)
 					{
-						dir = Vec2(-fixedXComponent, -1.0f);
+						dir = Vec2(-fixedZoneExitX, -1.0f);
 					}
 					// ball hit right of paddle center
 					else
 					{
-						dir = Vec2(fixedXComponent, -1.0f);
+						dir = Vec2(fixedZoneExitX, -1.0f);
 					}
 				}
 				// ball hit outside the fixed zone around paddle center
