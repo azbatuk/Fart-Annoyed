@@ -116,6 +116,11 @@ Vec2 Paddle::GetCenter() const
 	return Vec2(pos.x + width / 2, pos.y + height / 2);
 }
 
+RectF Paddle::GetRect() const
+{
+	return RectF(pos, width, height);
+}
+
 void Paddle::ResetCooldown()
 {
 	isCooldown = false;

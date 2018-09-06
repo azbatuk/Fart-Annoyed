@@ -72,11 +72,9 @@ private:
 	Sound soundNextRound;
 	Sound soundGameOver;
 	int lives = 3;
-	bool waitTimerStarted = false;
 	bool waitForNextRound = false;
-	std::chrono::steady_clock::time_point readyWait;
-	std::chrono::duration<float> waitDuration;
-	const float waitTime = 4.7f;
+	const float waitTime = 4.3f;
+	float curWaitTime = 0.0f;
 	bool isGameStarted = false;
 	bool isGameOver = false;
 	/********************************/

@@ -15,6 +15,7 @@ public:
 	Vec2 GetPos() const;
 	Vec2 GetVel() const;
 	Vec2 GetCenter() const;
+	RectF GetRect() const;
 	void ReboundX();
 	void ReboundY();
 	void SetDirection(const Vec2& dir);

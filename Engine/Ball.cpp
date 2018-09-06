@@ -63,6 +63,11 @@ Vec2 Ball::GetCenter() const
 	return Vec2(pos.x + radius, pos.y + radius);
 }
 
+RectF Ball::GetRect() const
+{
+	return RectF(pos, diameter, diameter);
+}
+
 void Ball::ReboundX()
 {
 	vel.x = -vel.x;

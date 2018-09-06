@@ -26,7 +26,6 @@ Game::Game(MainWindow& wnd)
 	:
 	wnd(wnd),
 	gfx(wnd),
-	ball(Vec2(300.0f, 300.0f), Vec2(-1.0f, -1.0f)),
 	paddle(Vec2(350.0f, 520.0f)),
 	soundPaddle(L"Sounds\\arkpad.wav"),
 	soundBrick(L"Sounds\\arkbrick.wav"),
@@ -47,7 +46,7 @@ Game::Game(MainWindow& wnd)
 
 	ballRadius = float(ball.GetDiameter() / 2);
 
-	//ResetBall();
+	ResetBall();
 }
 
 void Game::Go()
@@ -81,19 +80,26 @@ void Game::UpdateModel(float dt)
 		const int wallHitResult = ball.WallCollision(gameArea);
 		if (wallHitResult == 1) // hit side or top wall
 		{
-			paddle.ResetCooldown();
 			soundWall.Play();
+
+			// Only reset cooldown if not still colliding with Ball.
+			// Helps prevent Ball from getting trapped between Paddle and Wall.
+			if (! paddle.GetRect().isRectOverlapping(ball.GetRect()))
+			{
+				paddle.ResetCooldown();
+			}
 		}
 		else if (wallHitResult == 2) // hit bottom
 		{
 			lives -= 1;
 			if (lives == 0)
 			{
-				isGameOver = true;
 				soundGameOver.Play();
+				isGameOver = true;
 			}
 			else
 			{
+				soundNextRound.Play();
 				waitForNextRound = true;
 			}
 		}
@@ -129,7 +135,7 @@ void Game::UpdateModel(float dt)
 					float firstDistance = (ball.GetCenter() - bricks[firstCollisionIndex].GetCenter()).GetLengthSq();
 					float secondDistance = (ball.GetCenter() - bricks[i].GetCenter()).GetLengthSq();
 
-					// Undestroy the brick that is farther from the ball's center
+					// Find the Brick that is closer to the Ball's center and undestroy the other Brick that is farther
 					if (firstDistance < secondDistance)
 					{
 						// First brick is closer, undestroy the second
@@ -137,7 +143,7 @@ void Game::UpdateModel(float dt)
 					}
 					else
 					{
-						// Secong brick is closer, undestroy the first
+						// Second brick is closer, undestroy the first
 						bricks[firstCollisionIndex].SetDestroyed(false);
 					}
 				}
@@ -145,8 +151,8 @@ void Game::UpdateModel(float dt)
 		}
 		if (firstCollision)
 		{
-			paddle.ResetCooldown();
 			soundBrick.Play();
+			paddle.ResetCooldown();
 		}
 
 		if (paddle.BallCollision(ball))
@@ -156,25 +162,11 @@ void Game::UpdateModel(float dt)
 	}
 	else if (waitForNextRound && !isGameOver)
 	{
-		if (!waitTimerStarted)
-		{
-			soundNextRound.Play();
-			readyWait = std::chrono::steady_clock::now();
-			waitDuration = std::chrono::steady_clock::now() - readyWait;
-			waitTimerStarted = true;
-		}
-		else
-		{
-			waitDuration = std::chrono::steady_clock::now() - readyWait;
-		}
-
-		if (waitDuration.count() > waitTime)
+		if ((curWaitTime += dt) > waitTime)
 		{
 			waitForNextRound = false;
-			waitTimerStarted = false;
-
-			ball = Ball(Vec2(300.0f, 300.0f), Vec2(-0.55f, -1.0f));
-			//ResetBall();
+			curWaitTime = 0.0f;
+			ResetBall();
 		}
 	}
 	else
@@ -195,40 +187,54 @@ void Game::ComposeFrame()
 {
 	if (isGameStarted)
 	{
+		// Draw Walls
 		gfx.DrawRect(int(gameArea.left - borderThickness), int(gameArea.top - borderThickness), int(gameArea.left), gfx.ScreenHeight, Colors::Gray);
 		gfx.DrawRect(int(gameArea.left - borderThickness), int(gameArea.top - borderThickness), int(gameArea.right + borderThickness), int(gameArea.top), Colors::Gray);
 		gfx.DrawRect(int(gameArea.right), int(gameArea.top - borderThickness), int(gameArea.right + borderThickness), gfx.ScreenHeight, Colors::Gray);
 
+		// Draw Bricks
 		for (const Brick& b : bricks)
 		{
 			b.Draw(gfx);
 		}
 
+		// Draw Ball
 		SpriteCodex::DrawBall(ball.GetPos() + Vec2(ballRadius, ballRadius), gfx);
 
+		// Draw Paddle
 		paddle.Draw(gfx);
 
 		if (isGameOver)
 		{
+			// Draw Game Over sprite
 			SpriteCodex::DrawGameOver(Vec2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
 		}
 		else if (waitForNextRound)
 		{
+			// Draw Get Ready sprite
 			SpriteCodex::DrawReady(Vec2(gfx.ScreenWidth / 2, gfx.ScreenHeight / 2), gfx);
 		}
 
+		// Draw Lives
 		const int livesPadding = 2;
 		for (int i = 0; i < lives; i++)
 		{
-			gfx.DrawRect(RectF(gameArea.left + i * 50, 
+			gfx.DrawRect(RectF(gameArea.left    + i * 50, 
 							   gfx.ScreenHeight - 20, 
-							   gameArea.left + 40 + i * 50, 
+							   gameArea.left    + 40 + i * 50, 
 							   gfx.ScreenHeight - 10).GetExpanded(livesPadding) ,
 						Colors::Cyan);
 		}
 	}
 	else
 	{
+		// Draw right-angled triangles for test
+		//gfx.DrawIsoRightTriUL(100, 100, 50, Colors::White);
+		//gfx.DrawIsoRightTriUR(200, 100, 50, Colors::White);
+		//gfx.DrawIsoRightTriBL(100, 200, 50, Colors::White);
+		//gfx.DrawIsoRightTriBR(200, 200, 50, Colors::White);
+
+		// Draw Game Title sprite
 		SpriteCodex::DrawTitle(Vec2(400.0f, 300.0f), gfx);
 	}
 }

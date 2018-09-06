@@ -16,6 +16,7 @@ public:
 	bool BallCollision(Ball& ball);
 	void WallCollision(const RectF& gameArea);
 	Vec2 GetCenter() const;
+	RectF GetRect() const;
 	void ResetCooldown();
 	int CooldownCounter = 0;
 private:
@@ -24,7 +25,7 @@ private:
 	static constexpr float height = 20.0f;
 	static constexpr float halfWidth = width / 2.0f;
 	static constexpr float halfHeight = height / 2.0f;
-	static constexpr float speed = 200.0f;
+	static constexpr float speed = 250.0f;
 
 	static constexpr Color c = Colors::LightGray;
 	static constexpr float wingWidth = 10.0f;
