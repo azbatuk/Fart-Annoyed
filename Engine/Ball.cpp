@@ -13,33 +13,33 @@ void Ball::Update(float dt)
 	pos += vel * dt;
 }
 
-int Ball::WallCollision(const RectF & gameArea)
+Ball::WallHit Ball::WallCollision(const RectF & gameArea)
 {
 	if (pos.x < gameArea.left)
 	{
 		ReboundX();
 		pos.x = gameArea.left;
-		return 1;
+		return WallHit::SideTop;
 	}
 	else if (pos.x >= gameArea.right - diameter)
 	{
 		ReboundX();
 		pos.x = float(gameArea.right - diameter);
-		return 1;
+		return WallHit::SideTop;
 	}
 	else if (pos.y <= gameArea.top)
 	{
 		ReboundY();
 		pos.y = gameArea.top;
-		return 1;
+		return WallHit::SideTop;
 	}
 	else if (pos.y >= Graphics::ScreenHeight - diameter)
 	{
 		// No rebound! Game/Round over!
-		return 2;
+		return WallHit::Bottom;
 	}
 
-	return 0;
+	return WallHit::None;
 }
 
 Vec2 Ball::GetPos() const

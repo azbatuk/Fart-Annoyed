@@ -76,9 +76,8 @@ void Game::UpdateModel(float dt)
 	{
 		ball.Update(dt);
 
-		// wallHitResult: 0=none 1=hit wall 2=hit bottom
-		const int wallHitResult = ball.WallCollision(gameArea);
-		if (wallHitResult == 1) // hit side or top wall
+		const Ball::WallHit wallHitResult = ball.WallCollision(gameArea);
+		if (wallHitResult == Ball::WallHit::SideTop)
 		{
 			soundWall.Play();
 
@@ -89,7 +88,7 @@ void Game::UpdateModel(float dt)
 				paddle.ResetCooldown();
 			}
 		}
-		else if (wallHitResult == 2) // hit bottom
+		else if (wallHitResult == Ball::WallHit::Bottom)
 		{
 			lives -= 1;
 			if (lives == 0)
